@@ -1,9 +1,13 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Data;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using NHibernate.Cfg;
+using NHibernate.Connection;
+using NHibernate.Dialect;
+using NHibernate.Driver;
 
 namespace NHibernate.GuitarStore.DataAccess
 {
@@ -17,6 +21,14 @@ namespace NHibernate.GuitarStore.DataAccess
         public static Configuration ConfigureNHibernate(string assembly)
         {
             Configuration = new Configuration();
+            Configuration.DataBaseIntegration(dbi =>
+            {
+                dbi.Dialect<MsSql2008Dialect>();
+                dbi.Driver<SqlClientDriver>();
+                dbi.ConnectionProvider<DriverConnectionProvider>();
+                dbi.IsolationLevel = IsolationLevel.ReadCommitted;
+                dbi.Timeout = 15;
+            });
             Configuration.AddAssembly(assembly);
             return Configuration;
         }
