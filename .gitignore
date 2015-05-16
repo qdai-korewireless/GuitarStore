@@ -1,0 +1,17 @@
+bin/
+obj/
+[Ll]ib/
+*.suo
+*.user
+_Resharper*
+packages/
+
+# build output
+Libraries/
+Artifacts/
+Telematics.Shared/code/Telematics.ApplicationService/Web.config
+SAGProEngine_G2/code/SAGPro.Console/App.config
+SIDWebClient/code/KORE.SIDWebClient.UI/Web.config
+PRISMPro/code/KORE.PRISMPro.UI/Web.config
+
+*.dbmdl
