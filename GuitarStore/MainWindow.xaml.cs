@@ -12,6 +12,8 @@ using System.Windows.Media;
 using System.Windows.Media.Imaging;
 using System.Windows.Navigation;
 using System.Windows.Shapes;
+using NHibernate.GuitarStore.Common;
+using NHibernate.GuitarStore.DataAccess;
 
 namespace GuitarStore
 {
@@ -23,6 +25,25 @@ namespace GuitarStore
         public MainWindow()
         {
             InitializeComponent();
+
+            var nhb = new NHibernateBase();
+            nhb.Initialize("NHibernate.GuitarStore");
+        }
+
+        private void Window_Loaded(object sender, RoutedEventArgs e)
+        {
+            var nhb = new NHibernateInventory();
+            var list = nhb.ExecuteICriteriaOrderBy("Builder");
+            dataGridInventory.ItemsSource = list;
+            if (list != null)
+            {
+                dataGridInventory.Columns[0].Visibility =
+                System.Windows.Visibility.Hidden;
+                dataGridInventory.Columns[1].Visibility =
+                System.Windows.Visibility.Hidden;
+                dataGridInventory.Columns[8].Visibility =
+                System.Windows.Visibility.Hidden;
+            }
         }
     }
 }

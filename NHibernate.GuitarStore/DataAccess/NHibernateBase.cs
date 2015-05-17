@@ -28,6 +28,7 @@ namespace NHibernate.GuitarStore.DataAccess
                 dbi.ConnectionProvider<DriverConnectionProvider>();
                 dbi.IsolationLevel = IsolationLevel.ReadCommitted;
                 dbi.Timeout = 15;
+                dbi.ConnectionStringName = "GuitarStore";
             });
             Configuration.AddAssembly(assembly);
             return Configuration;

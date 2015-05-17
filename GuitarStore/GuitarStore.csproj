@@ -100,6 +100,12 @@
   <ItemGroup>
     <None Include="App.config" />
   </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\NHibernate.GuitarStore\NHibernate.GuitarStore.csproj">
+      <Project>{8ebdd6b0-6804-48e5-a256-d8399cd8a9be}</Project>
+      <Name>NHibernate.GuitarStore</Name>
+    </ProjectReference>
+  </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
        Other similar extension points exist, see Microsoft.Common.targets.
