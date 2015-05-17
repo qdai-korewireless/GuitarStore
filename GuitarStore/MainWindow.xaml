@@ -3,7 +3,9 @@
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
         Title="MainWindow" Height="350" Width="525" Loaded="Window_Loaded">
     <Grid >
-        <DataGrid HorizontalAlignment="Left" Margin="10,10,0,0" VerticalAlignment="Top" Height="279" Width="498" Name="dataGridInventory"/>
+        <DataGrid HorizontalAlignment="Left" Margin="76,71,0,0" VerticalAlignment="Top" Height="218" Width="432" Name="dataGridInventory"/>
+        <ComboBox HorizontalAlignment="Left" Margin="76,26,0,0" VerticalAlignment="Top" Width="120" Name="comboBoxGuitarTypes" SelectionChanged="comboBoxGuitarTypes_SelectionChanged"/>
+        <Label Name="labelMessage" Content="Label" HorizontalAlignment="Left" Margin="238,23,0,0" VerticalAlignment="Top" Width="68"/>
 
     </Grid>
 </Window>
