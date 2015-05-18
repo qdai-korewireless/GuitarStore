@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using log4net;
 using NHibernate.GuitarStore.Common;
 using NHibernate.GuitarStore.DataAccess;
 using NHibernate.Linq;
@@ -9,14 +10,17 @@ namespace NHibernate.GuitarStore.Console
 {
     class Program
     {
+        private static ILog log = LogManager.GetLogger("NHBase.SQL");
         static void Main(string[] args)
         {
+            
             try
             { 
                 var nhb = new NHibernateBase();
                 nhb.Initialize("NHibernate.GuitarStore");
                 System.Console.WriteLine("NHibernate.GuitarStore assembly initialized.");
-                
+                log.Debug("debug msg");
+                log.Error("error msg");
                 Tests(nhb);
                 System.Console.ReadLine();
 

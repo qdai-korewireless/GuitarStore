@@ -32,20 +32,25 @@ namespace GuitarStore
 
         private void Window_Loaded(object sender, RoutedEventArgs e)
         {
+            PopulateDataGrid();
+            PopulateComboBox();
+            SetDatabaseRoundTripImage();
+        }
+
+        private void PopulateDataGrid()
+        {
             var nhb = new NHibernateInventory();
             var list = nhb.ExecuteICriteriaOrderBy("Builder");
             dataGridInventory.ItemsSource = list;
-            PopulateComboBox();
             if (list != null)
             {
                 dataGridInventory.Columns[0].Visibility =
-                System.Windows.Visibility.Hidden;
+                Visibility.Hidden;
                 dataGridInventory.Columns[1].Visibility =
-                System.Windows.Visibility.Hidden;
-                dataGridInventory.Columns[8].Visibility =
-                System.Windows.Visibility.Hidden;
+                Visibility.Hidden;
+                //dataGridInventory.Columns[8].Visibility =
+               // Visibility.Hidden;
             }
-            
         }
 
         private void PopulateComboBox()
@@ -75,7 +80,7 @@ namespace GuitarStore
                 {
                     dataGridInventory.Columns[0].Visibility = System.Windows.Visibility.Hidden;
                     dataGridInventory.Columns[1].Visibility = System.Windows.Visibility.Hidden;
-                    dataGridInventory.Columns[8].Visibility = System.Windows.Visibility.Hidden;
+                    //dataGridInventory.Columns[8].Visibility = System.Windows.Visibility.Hidden;
                 }
                 PopulateComboBox();
             }
@@ -84,5 +89,55 @@ namespace GuitarStore
                 labelMessage.Content = ex.Message;
             }
         }
+
+        private void buttonViewSQL_Click(object sender, RoutedEventArgs e)
+        {
+            MessageBox.Show(Utils.FormatSQL(), "Most recent NHibernate generated SQL",
+            MessageBoxButton.OK, MessageBoxImage.Information);
+        }
+
+        public void SetDatabaseRoundTripImage()
+        {
+            if (Utils.QueryCounter < 0)
+            {
+                labelTraffic.Content = "Red";
+            }
+            else if (Utils.QueryCounter == 0)
+            {
+            labelTraffic.Content = "Green";
+            }
+            else if (Utils.QueryCounter == 1)
+            {
+            labelTraffic.Content = "Green";
+            }
+            else if (Utils.QueryCounter == 2)
+            {
+                labelTraffic.Content = "Yellow";
+            }
+            else if (Utils.QueryCounter > 2)
+            {
+            labelTraffic.Content = "Red";
+            }
+            //reset the value each time this method is called.
+            Utils.QueryCounter = 0;
+          }
+
+        private void buttonDelete_Click(object sender, RoutedEventArgs e)
+        {
+            var inventoryItem = (Inventory)dataGridInventory.SelectedItem;
+            var item = new Guid(inventoryItem.Id.ToString());
+            var nhi = new NHibernateInventory();
+            if (nhi.DeleteInventoryItem(item))
+            {
+                dataGridInventory.ItemsSource = null;
+                PopulateDataGrid();
+                labelMessage.Content = "Item deleted.";
+            }
+            else
+            {
+                labelMessage.Content = "Item deletion failed.";
+            }
+        }
+        
     }
 }

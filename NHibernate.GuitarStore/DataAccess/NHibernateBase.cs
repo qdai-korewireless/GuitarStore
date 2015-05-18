@@ -1,13 +1,21 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Configuration;
 using System.Data;
+using System.IO;
 using System.Linq;
+using System.Runtime.Serialization;
+using System.Runtime.Serialization.Formatters.Binary;
 using System.Text;
 using System.Threading.Tasks;
+using log4net;
 using NHibernate.Cfg;
 using NHibernate.Connection;
 using NHibernate.Dialect;
 using NHibernate.Driver;
+using NHibernate.Event;
+using NHibernate.SqlCommand;
+using Configuration = NHibernate.Cfg.Configuration;
 
 namespace NHibernate.GuitarStore.DataAccess
 {
@@ -17,6 +25,12 @@ namespace NHibernate.GuitarStore.DataAccess
         protected static ISessionFactory SessionFactory { get; set; }
         private static ISession session = null;
         private static IStatelessSession statelessSession = null;
+
+
+        public NHibernateBase()
+        {
+            log4net.Config.XmlConfigurator.Configure();
+        }
 
         public static Configuration ConfigureNHibernate(string assembly)
         {
@@ -30,9 +44,19 @@ namespace NHibernate.GuitarStore.DataAccess
                 dbi.Timeout = 15;
                 dbi.ConnectionStringName = "GuitarStore";
             });
+
+            //add interceptors
+            Configuration.SetInterceptor(new SQLInterceptor());
+
+            //add events
+            Configuration.EventListeners.PostDeleteEventListeners =
+new IPostDeleteEventListener[] { new AuditDeleteEvent() };
+
+
             Configuration.AddAssembly(assembly);
             return Configuration;
         }
+
         public void Initialize(string assembly)
         {
             Configuration = ConfigureNHibernate(assembly);
@@ -67,5 +91,25 @@ namespace NHibernate.GuitarStore.DataAccess
             }
         }
 
+
+    }
+    public class SQLInterceptor : EmptyInterceptor, IInterceptor
+    {
+        SqlString IInterceptor.OnPrepareStatement(SqlString sql)
+        {
+            Utils.NHibernateGeneratedSQL = sql.ToString();
+            Utils.QueryCounter++;
+            return sql;
+        }
+    }
+
+    public class AuditDeleteEvent : IPostDeleteEventListener
+    {
+        private static ILog log = LogManager.GetLogger("NHBase.SQL");
+
+        public void OnPostDelete(PostDeleteEvent @event)
+        {
+            log.Info(@event.Id.ToString() + " has been deleted.");
+        }
     }
 }
