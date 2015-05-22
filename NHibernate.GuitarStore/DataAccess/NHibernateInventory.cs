@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections;
 using System.Collections.Generic;
 using NHibernate.Criterion;
 using NHibernate.GuitarStore.Common;
@@ -65,7 +66,26 @@ namespace NHibernate.GuitarStore.DataAccess
                 }
             }
         }
-
+        public IList GetDynamicInventory()
+        {
+            using (ITransaction transaction = Session.BeginTransaction())
+            {
+                IQuery query = Session.CreateQuery
+                ("select Builder, Model, Price, Id from Inventory order by Builder");
+                return query.List();
+            }
+        }
+        public IList GetDynamicInventory(Guid TypeId)
+        {
+            using (ITransaction transaction = Session.BeginTransaction())
+            {
+                string hqlQuery = "select Builder, Model, Price, Id " +
+                "from Inventory " +
+                "where TypeId = :TypeId order by Builder";
+                IQuery query = Session.CreateQuery(hqlQuery).SetGuid("TypeId", TypeId);
+                return query.List();
+            }
+        }
 
         
     }
