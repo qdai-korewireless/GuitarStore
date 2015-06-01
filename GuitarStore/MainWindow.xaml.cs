@@ -40,18 +40,24 @@ namespace GuitarStore
             SetDatabaseRoundTripImage();
         }
 
+        public int FirstResult = 0;
+        public int MaxResult = 25;
+        public int totalCount = 0;
         private void PopulateDataGrid()
         {
             var nhi = new NHibernateInventory();
             var fields = new List<string>
             {
-            "Builder", "Model", "Price", "Id"
+            "Builder", "Model", "Price", "Id","Profit"
             };
-            IList guitarInventory = nhi.GetDynamicInventory();
+            IList guitarInventory;
+            var inventoryCount = nhi.GetInventoryPaging(MaxResult, FirstResult, out guitarInventory);
             dataGridInventory.ItemsSource =
             BuildDataTable(fields, guitarInventory).DefaultView;
-         
-
+            totalCount = inventoryCount;
+            labelPaging.Content = FirstResult.ToString() + " - " + (FirstResult + MaxResult).ToString() + " / " +
+                                  inventoryCount.ToString();
+            SetDatabaseRoundTripImage();
         }
 
         private void PopulateComboBox()
@@ -81,7 +87,7 @@ namespace GuitarStore
                 var listResult = nhi.GetDynamicInventory(guitarType);
                 var fields = new List<string>
                 {
-                "Builder", "Model", "Price", "Id"
+                "Builder", "Model", "Price", "Id","Profit"
                 };
                 var list = BuildDataTable(fields, listResult);
                 dataGridInventory.ItemsSource = list.DefaultView;
@@ -158,6 +164,116 @@ namespace GuitarStore
                 }
             }
             return dataTable;
+        }
+
+        private void buttonNext_Click(object sender, RoutedEventArgs e)
+        {
+            buttonPrevious.IsEnabled = true;
+            FirstResult = FirstResult + MaxResult;
+            PopulateDataGrid();
+            if (FirstResult > 0)
+            {
+                buttonPrevious.IsEnabled = true;
+            }
+            if (FirstResult + MaxResult >= totalCount)
+            {
+                buttonNext.IsEnabled = false;
+            }
+        }
+
+        private void buttonPrevious_Click(object sender, RoutedEventArgs e)
+        {
+            buttonNext.IsEnabled = true;
+            if (FirstResult > 0)
+            {
+                FirstResult = FirstResult - MaxResult;
+                if (FirstResult < 0) FirstResult = 0;
+            }
+            else
+            {
+                buttonPrevious.IsEnabled = false;
+            }
+            PopulateDataGrid();
+            if (FirstResult == 0)
+            {
+                buttonPrevious.IsEnabled = true;
+            }
+        }
+
+        private void buttonSUM_Click(object sender, RoutedEventArgs e)
+        {
+            var nhi = new NHibernateInventory();
+            var fields = new List<string> { "Guitar Type", "Total Value" };
+            IList GuitarInventory = nhi.ExecuteNamedQuery("GuitarValueByTypeHQL");
+            dataGridInventory.ItemsSource =
+            BuildDataTable(fields, GuitarInventory).DefaultView;
+            SetDatabaseRoundTripImage();
+        }
+
+        private void buttonAverage_Click(object sender, RoutedEventArgs e)
+        {
+            var nhi = new NHibernateInventory();
+            var fields = new List<string>
+            {
+                "Guitar Type", "Average Value"
+            };
+            var GuitarInventory = nhi.ExecuteNamedQuery("GuitarAVGValueByTypeHQL");
+            dataGridInventory.ItemsSource =
+            BuildDataTable(fields, GuitarInventory).DefaultView;
+            SetDatabaseRoundTripImage();
+        }
+
+        private void buttonMinimum_Click(object sender, RoutedEventArgs e)
+        {
+            var nhi = new NHibernateInventory();
+            var fields = new List<string>
+            {
+                "Guitar Type", "Minimum Value"
+            };
+            var GuitarInventory = nhi.ExecuteNamedQuery("GuitarMINValueByTypeHQL");
+            dataGridInventory.ItemsSource =
+            BuildDataTable(fields, GuitarInventory).DefaultView;
+            SetDatabaseRoundTripImage();
+        }
+
+        private void buttonMaximum_Click(object sender, RoutedEventArgs e)
+        {
+            var nhi = new NHibernateInventory();
+            var fields = new List<string>
+            {
+                "Guitar Type", "Maximum Value"
+            };
+            var GuitarInventory = nhi.ExecuteNamedQuery("GuitarMAXValueByTypeHQL");
+            dataGridInventory.ItemsSource =
+            BuildDataTable(fields, GuitarInventory).DefaultView;
+            SetDatabaseRoundTripImage();
+        }
+
+        private void buttonCount_Click(object sender, RoutedEventArgs e)
+        {
+            var nhi = new NHibernateInventory();
+            var fields = new List<string>
+            {
+                "Guitar Type", "Count Value"
+            };
+            var GuitarInventory = nhi.ExecuteNamedQuery("GuitarCOUNTByTypeHQL");
+            dataGridInventory.ItemsSource =
+            BuildDataTable(fields, GuitarInventory).DefaultView;
+            SetDatabaseRoundTripImage();
+        }
+
+        private void buttonSearch_Click(object sender, RoutedEventArgs e)
+        {
+            var nhi = new NHibernateInventory();
+            var fields = new List<string>
+            {
+            "Builder", "Model", "Price", "Id"
+            };
+            var guitarInventory =
+            nhi.ExecuteDetachedQuery("%" + textBoxSearch.Text + "%");
+            dataGridInventory.ItemsSource =
+            BuildDataTable(fields, guitarInventory).DefaultView;
+            SetDatabaseRoundTripImage();
         }
     }
 }

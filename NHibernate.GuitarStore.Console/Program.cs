@@ -49,6 +49,10 @@ namespace NHibernate.GuitarStore.Console
             var list2 =
             NHibernateBase.Session.CreateCriteria(typeof(Inventory)).List<Inventory>();
             var linq =(from l in NHibernateBase.Session.Query<Inventory>() select l);
+
+            var inv = new NHibernateInventory();
+            var r1 = inv.ExecuteNamedQuery("GuitarValueByTypeHQL");
+            System.Console.WriteLine("named query: "+r1.Count+" count");
         }
 
     }

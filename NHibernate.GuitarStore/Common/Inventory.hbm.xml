@@ -9,5 +9,6 @@
     <property name="Cost" column="COST" type="System.Decimal" />
     <property name="Price" column="PRICE" type="System.Decimal" />
     <property name="Received" column="RECEIVED" type="System.DateTime" />
+    <property name="Profit" formula="ROUND((Price-Cost), 2)" type="decimal" />
   </class>
 </hibernate-mapping>
